@@ -1,0 +1,25 @@
+const axios = require('axios');
+
+// Strapi server URL
+const STRAPI_URL = 'http://localhost:1337/api'; // Replace with your Strapi URL
+
+async function registerUser(username, email, password) {
+  try {
+    const response = await axios.post(`${STRAPI_URL}/auth/local/register`, {
+      username: username,
+      email: email,
+      password: password,
+    });
+
+    console.log('User registered successfully:', response.data);
+    return response.data; // Contains user info and JWT token
+  } catch (error) {
+    console.error('Error registering user:', error.response?.data || error.message);
+    throw error;
+  }
+}
+
+// Example usage
+registerUser('testuser', 'testuser@example.com', 'password123')
+  .then((data) => console.log('Registration successful:', data))
+  .catch((err) => console.error('Registration failed:', err));

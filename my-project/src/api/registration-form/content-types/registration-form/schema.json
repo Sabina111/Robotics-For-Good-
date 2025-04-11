@@ -1,0 +1,41 @@
+{
+  "kind": "collectionType",
+  "collectionName": "registration_forms",
+  "info": {
+    "singularName": "registration-form",
+    "pluralName": "registration-forms",
+    "displayName": "Registration form",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "Name": {
+      "type": "string",
+      "required": true,
+      "maxLength": 40,
+      "minLength": 3
+    },
+    "Email": {
+      "type": "email",
+      "required": true
+    },
+    "Date": {
+      "required": true,
+      "type": "date"
+    },
+    "Numbers": {
+      "type": "biginteger"
+    },
+    "Values": {
+      "type": "enumeration",
+      "enum": [
+        "School level",
+        "College level"
+      ],
+      "required": true,
+      "default": "School level"
+    }
+  }
+}
