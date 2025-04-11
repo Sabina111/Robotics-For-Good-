@@ -17,8 +17,20 @@ $(document).ready(function() {
         const originalText = submitButton.text();
         submitButton.prop('disabled', true).text('Submitting...');
 
-        // Serialize form data
-        const formData = $(this).serialize();
+        // Get form data
+        const formData = {
+            first_name: $('input[name="first_name"]').val(),
+            middle_name: $('input[name="middle_name"]').val(),
+            last_name: $('input[name="last_name"]').val(),
+            date_of_birth: $('input[name="date_of_birth"]').val(),
+            email: $('input[name="email"]').val(),
+            phone: $('input[name="phone"]').val(),
+            ticket_type: $('select[name="ticket_type"]').val(),
+            district: $('input[name="district"]').val(),
+            school_college: $('input[name="school_college"]').val(),
+            message: $('textarea[name="message"]').val(),
+            register: 'true'  // Add this to match the PHP check
+        };
 
         // Send AJAX request
         $.ajax({
@@ -35,7 +47,11 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr, status, error) {
-                showMessage('error', 'Sorry, there was an error processing your registration. Please try again.');
+                let errorMessage = 'Sorry, there was an error processing your registration. Please try again.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                }
+                showMessage('error', errorMessage);
                 console.error('Registration error:', error);
             },
             complete: function() {

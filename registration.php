@@ -33,48 +33,57 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    echo json_encode(['success' => false, 'message' => 'Database connection failed']);
-    exit;
+    die("Connection failed: " . $e->getMessage());
 }
 
 // Check if the form is submitted
 if (isset($_POST['register'])) {
     // Get form data
-    $user_username = $_POST['username'];
-    $user_email = $_POST['email'];
-    $user_password = $_POST['password'];
-    $confirm_password = $_POST['confirm_password'];
+    $first_name = $_POST['first_name'];
+    $middle_name = $_POST['middle_name'] ?? '';
+    $last_name = $_POST['last_name'];
+    $date_of_birth = $_POST['date_of_birth'];
+    $email = $_POST['email'];
+    $phone = $_POST['phone'];
+    $ticket_type = $_POST['ticket_type'];
+    $district = $_POST['district'];
+    $school_college = $_POST['school_college'];
+    $message = $_POST['message'] ?? '';
 
-    // Simple validation: check if passwords match
-    if ($user_password !== $confirm_password) {
-        echo "<script>alert('Passwords do not match!');</script>";
-        exit;
-    }
+    // Sanitize input
+    $first_name = htmlspecialchars($first_name);
+    $middle_name = htmlspecialchars($middle_name);
+    $last_name = htmlspecialchars($last_name);
+    $email = htmlspecialchars($email);
+    $phone = htmlspecialchars($phone);
+    $ticket_type = htmlspecialchars($ticket_type);
+    $district = htmlspecialchars($district);
+    $school_college = htmlspecialchars($school_college);
+    $message = htmlspecialchars($message);
 
-    // Sanitize input to avoid XSS attacks (for security)
-    $user_username = htmlspecialchars($user_username);
-    $user_email = htmlspecialchars($user_email);
-
-    // Hash the password for security (recommended for storing passwords)
-    $hashed_password = password_hash($user_password, PASSWORD_DEFAULT);
-
-    // Prepare the SQL query to insert the new user
-    $sql = "INSERT INTO users (username, email, password) VALUES (:username, :email, :password)";
+    // Prepare the SQL query
+    $sql = "INSERT INTO registrations (first_name, middle_name, last_name, date_of_birth, email, phone, ticket_type, district, school_college, message) 
+            VALUES (:first_name, :middle_name, :last_name, :date_of_birth, :email, :phone, :ticket_type, :district, :school_college, :message)";
     
-    // Prepare the statement
     $stmt = $pdo->prepare($sql);
 
-    // Bind the parameters
-    $stmt->bindParam(':username', $user_username);
-    $stmt->bindParam(':email', $user_email);
-    $stmt->bindParam(':password', $hashed_password);
+    // Bind parameters
+    $stmt->bindParam(':first_name', $first_name);
+    $stmt->bindParam(':middle_name', $middle_name);
+    $stmt->bindParam(':last_name', $last_name);
+    $stmt->bindParam(':date_of_birth', $date_of_birth);
+    $stmt->bindParam(':email', $email);
+    $stmt->bindParam(':phone', $phone);
+    $stmt->bindParam(':ticket_type', $ticket_type);
+    $stmt->bindParam(':district', $district);
+    $stmt->bindParam(':school_college', $school_college);
+    $stmt->bindParam(':message', $message);
 
-    // Execute the statement
     try {
         $stmt->execute();
-        echo "<script>alert('Registration successful!');</script>";
+        echo json_encode(['success' => true, 'message' => 'Registration successful!']);
     } catch (PDOException $e) {
-        echo "<script>alert('Error: " . $e->getMessage() . "');</script>";
+        echo json_encode(['success' => false, 'message' => 'Error: ' . $e->getMessage()]);
     }
 } else {
     echo json_encode(['success' => false, 'message' => 'Invalid request method']);
